@@ -1,0 +1,18 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        if [ -x /usr/local/lib/music-lab/labd ]; then
+            /usr/local/lib/music-lab/labd >/tmp/labd.log 2>&1 &
+            echo $! >/var/run/labd.pid
+        fi
+        ;;
+    stop)
+        if [ -f /var/run/labd.pid ]; then
+            kill "$(cat /var/run/labd.pid)" 2>/dev/null || true
+            rm -f /var/run/labd.pid
+        fi
+        ;;
+esac
+
+exit 0
