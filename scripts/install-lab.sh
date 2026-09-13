@@ -19,7 +19,7 @@ if ! scp -O "$REPO_DIR/lab/lab" "$LAB_HOST:$REMOTE_PATH"; then
     exit 1
 fi
 
-if ! ssh "$LAB_HOST" "mkdir -p /usr/local/bin && cp '$REMOTE_PATH' /usr/local/bin/lab && chmod 755 /usr/local/bin/lab && rm -f '$REMOTE_PATH' && /usr/local/bin/lab status"; then
+if ! ssh "$LAB_HOST" "mkdir -p /usr/local/bin && cp '$REMOTE_PATH' /usr/local/bin/lab && chmod 755 /usr/local/bin/lab && ln -sf /usr/local/bin/lab /usr/bin/lab && rm -f '$REMOTE_PATH' && /usr/bin/lab status"; then
     printf 'SSH installation or remote lab status failed.\n' >&2
     exit 1
 fi
