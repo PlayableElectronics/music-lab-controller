@@ -6,9 +6,18 @@ ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 SDK_URL=${DUO_SDK_URL:-https://github.com/milkv-duo/duo-buildroot-sdk.git}
 SDK_REF=${DUO_SDK_REF:-v1.1.4}
 SDK_DIR=${DUO_SDK_DIR:-/tmp/music-lab-controller-duo-sdk}
+MIN_FREE_KIB=${DUO_MIN_FREE_KIB:-10485760}
 
 if [ "$(uname -s)" != Linux ]; then
     printf '%s\n' 'The official Milk-V SDK build must run on Linux.' >&2
+    exit 1
+fi
+
+free_kib=$(df -Pk "$(dirname "$SDK_DIR")" | awk 'NR == 2 { print $4 }')
+if [ -z "$free_kib" ] || [ "$free_kib" -lt "$MIN_FREE_KIB" ]; then
+    printf 'Insufficient free space near %s: need at least %s KiB, have %s KiB.\n' \
+        "$SDK_DIR" "$MIN_FREE_KIB" "${free_kib:-unknown}" >&2
+    printf '%s\n' 'Use a build host with more storage or set DUO_SDK_DIR to a larger filesystem.' >&2
     exit 1
 fi
 

@@ -5,10 +5,10 @@ reviewed for the exact board revision. Do not connect Raspberry Pi 5 V to the
 Duo’s `VBUS` or `VSYS` based on pin names alone.
 
 The official original-Duo pinout identifies header pin 40 as `VBUS` and pin
-39 as `VSYS`; the published schematic shows the USB-C VBUS path and a diode
-connection into the system rail. That establishes that these nets are not
-interchangeable signal pins, but it is not by itself permission to tie two
-powered boards together.
+39 as `VSYS`; the [official schematic](https://github.com/milkv-duo/duo-files/blob/main/duo/hardware/duo-schematic-v1.2.pdf)
+shows the USB-C VBUS path and a diode connection into the system rail. That
+establishes that these nets are not interchangeable signal pins, but it is
+not by itself permission to tie two powered boards together.
 
 Until the schematic-backed current/voltage and backfeed behavior is verified:
 
