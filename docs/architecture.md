@@ -24,6 +24,30 @@ topology, or an explicit handshake rather than `/dev/ttyACM0` alone.
 The initial terminal UI must work with an ANSI/VT100 terminal. `tuiui` may be
 evaluated later, but is not required for the first milestone.
 
+## Development and deployment topology
+
+During bring-up, `daisies` is a Raspberry Pi development/build and recovery
+bridge:
+
+```text
+Mac --SSH--> daisies --UART--> Duo
+                    |
+                  build
+```
+
+The intended performance topology is separate from that bridge:
+
+```text
+Mac --Ethernet/Wi-Fi--> USB network adapter --> powered hub --> Duo
+PicoCalc ----------------UART-------------------------------> Duo
+                                                    |
+                                             USB lab devices
+```
+
+USB gadget mode is temporary development access. USB host mode is reserved
+for lab peripherals and network adapters. UART is the safe recovery path and
+must be proven before changing USB roles.
+
 ## Current runtime boundary
 
 The first daemon listens on `/tmp/labd.sock` and uses a small line protocol:

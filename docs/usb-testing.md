@@ -21,3 +21,6 @@ Then plug and unplug one real USB CDC, USB-serial, or USB-MIDI device and
 repeat `lab devices` without restarting `labd`. Do not record a device name or
 class here until it has been observed on this board.
 
+The latest inspection of `daisies` also showed only the Pi's own root hub and
+internal hub/Ethernet devices. It did not show the Duo as a USB device, so no
+host-mode or downstream-device result is claimed yet.

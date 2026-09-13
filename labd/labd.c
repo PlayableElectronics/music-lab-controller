@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE 700
 
 #include <dirent.h>
 #include <errno.h>
@@ -76,6 +77,17 @@ static void basename_copy(const char *path, char *value, size_t size)
     copy_text(value, size, slash == NULL ? path : slash + 1);
 }
 
+static int append_path(char *destination, size_t size, const char *base, const char *suffix)
+{
+    size_t base_length = strlen(base);
+    size_t suffix_length = strlen(suffix);
+    if(base_length + suffix_length + 1 > size)
+        return -1;
+    memcpy(destination, base, base_length);
+    memcpy(destination + base_length, suffix, suffix_length + 1);
+    return 0;
+}
+
 static int is_serial_name(const char *name)
 {
     return strncmp(name, "ttyS", 4) == 0 || strncmp(name, "ttyACM", 6) == 0
@@ -99,28 +111,28 @@ static void inspect_usb_parent(Device *device, const char *sysfs_path)
     for(int depth = 0; depth < 8; ++depth)
     {
         char path[PATH_MAX];
-        snprintf(path, sizeof(path), "%s/idVendor", current);
-        if(device->vid[0] == '\0')
+        if(append_path(path, sizeof(path), current, "/idVendor") == 0
+           && device->vid[0] == '\0')
             (void)read_file(path, device->vid, sizeof(device->vid));
-        snprintf(path, sizeof(path), "%s/idProduct", current);
-        if(device->pid[0] == '\0')
+        if(append_path(path, sizeof(path), current, "/idProduct") == 0
+           && device->pid[0] == '\0')
             (void)read_file(path, device->pid, sizeof(device->pid));
-        snprintf(path, sizeof(path), "%s/manufacturer", current);
-        if(device->manufacturer[0] == '\0')
+        if(append_path(path, sizeof(path), current, "/manufacturer") == 0
+           && device->manufacturer[0] == '\0')
             (void)read_file(path, device->manufacturer, sizeof(device->manufacturer));
-        snprintf(path, sizeof(path), "%s/product", current);
-        if(device->product[0] == '\0')
+        if(append_path(path, sizeof(path), current, "/product") == 0
+           && device->product[0] == '\0')
             (void)read_file(path, device->product, sizeof(device->product));
-        snprintf(path, sizeof(path), "%s/serial", current);
-        if(device->serial[0] == '\0')
+        if(append_path(path, sizeof(path), current, "/serial") == 0
+           && device->serial[0] == '\0')
             (void)read_file(path, device->serial, sizeof(device->serial));
         if(device->vid[0] != '\0')
         {
             basename_copy(current, device->path, sizeof(device->path));
             char driver_link[PATH_MAX];
-            snprintf(driver_link, sizeof(driver_link), "%s/driver", current);
             char driver_path[PATH_MAX];
-            if(realpath(driver_link, driver_path) != NULL)
+            if(append_path(driver_link, sizeof(driver_link), current, "/driver") == 0
+               && realpath(driver_link, driver_path) != NULL)
                 basename_copy(driver_path, device->driver, sizeof(device->driver));
             return;
         }

@@ -28,3 +28,22 @@ ssh -t root@192.168.42.1 lab-tui
 
 After installation, connect the powered USB hub and record actual `lsusb`,
 `dmesg`, sysfs, and `lab devices` output in `docs/usb-testing.md`.
+
+## 2026-09-13 — daisies bridge attempt
+
+- `daisies` is a Raspberry Pi arm64 running Debian 13, reachable at
+  `pi@192.168.1.50` (`daisies.local` did not resolve from the Mac).
+- Native GCC is present. Debian's `gcc-riscv64-linux-gnu` package is available
+  but installing it requires the Pi user's sudo password.
+- As a non-root workaround, the compiler and development packages were
+  downloaded/extracted under `/tmp/riscv-root` on `daisies`.
+- Exact compiler used:
+  `/tmp/riscv-root/usr/bin/riscv64-linux-gnu-gcc-14`.
+- Successful command used `-std=c99 -Os -Wall -Wextra -Werror -static` with
+  the extracted sysroot; both binaries are RISC-V static ELF executables.
+- Sizes on `daisies`: `labd` 545 KiB and `lab-client` 477 KiB after stripping.
+- The latest USB inspection found only the Pi's own hub chain and no Duo;
+  there were no serial adapter nodes. The Duo's USB-C SSH path also timed
+  out, so no binary was deployed or executed on the Duo.
+- No UART console or USB role switch was attempted. The safety gate remains
+  active.

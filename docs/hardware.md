@@ -38,3 +38,13 @@ The stock image uses `/etc/inittab` to run `/etc/init.d/rcS`, which starts
 numbered scripts such as `S99user`. The project startup script is named
 `S70labd` and is installed only by the explicit project installer; no stock
 boot files are changed by the image scaffolding.
+
+## Daisies bridge observation
+
+`daisies` is a Raspberry Pi running Debian 13 on `aarch64` at the currently
+known address `192.168.1.50`. It has native `/usr/bin/gcc` and can host the
+Debian `riscv64-linux-gnu` cross compiler. A non-root extracted toolchain was
+used successfully for a strict static build; see `docs/notes.md`.
+
+The latest physical inspection found no Duo serial adapter and no Duo USB
+network interface on `daisies`. Only the Pi's own USB hub chain was visible.
