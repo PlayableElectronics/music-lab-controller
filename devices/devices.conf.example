@@ -1,0 +1,4 @@
+# Logical name followed by stable matching attributes.
+# rp2040 vid=2e8a pid=000a
+# daisy vid=0483 pid=5740
+# fpga uart=/dev/ttyS1
