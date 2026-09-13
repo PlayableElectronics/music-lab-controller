@@ -40,5 +40,16 @@ only from the proven UART console, with the serial session kept open.
 The current verified USB observation is the Duo composite gadget (`3346:100c`)
 with CDC NCM and CDC ACM interfaces. This is not evidence of downstream USB
 host enumeration. The UART safety gate is now satisfied, so the project is
-safe to proceed to a separately reviewed powered-hub host test, but this
-documented role switch has deliberately not been executed in this milestone.
+safe to attempt a controlled powered-hub host test. A first controlled attempt
+was made from UART on 2026-09-13 using `/etc/uhubon.sh host`; it disconnected
+the gadget but failed with:
+
+```text
+insmod: can't insert '/mnt/system/ko/dwc2.ko': No such file or directory
+```
+
+The role was restored from UART with `/etc/uhubon.sh device`. The gadget
+returned, `ROLE=device`, `lab ping` returned `OK PONG`, `labd` restarted/was
+running, and the five onboard UART nodes were still discovered. No downstream
+hub or USB host enumeration was observed. Do not retry host mode until the
+missing module/stock-image host support is resolved.

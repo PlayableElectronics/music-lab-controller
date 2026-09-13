@@ -35,7 +35,17 @@
 - The live Duo USB role was not changed. A read-only inspection found the
   original-image helper `/mnt/system/usb-host.sh`, which writes `host` or
   `device` to `/proc/cviusb/otg_role`; see `docs/usb-role.md`. No role command
-  was executed.
+  was executed during that read-only inspection.
+
+### 2026-09-13 — controlled USB host attempt
+
+- With UART recovery available, `/etc/uhubon.sh host` was issued over the
+  Duo UART. The stock image reported that `/mnt/system/ko/dwc2.ko` was absent;
+  the USB gadget disconnected but host initialization did not complete.
+- `/etc/uhubon.sh device` was then issued over UART. USB NCM returned on
+  `daisies`, `/proc/cviusb/otg_role` reported `device`, and the Duo again
+  passed `lab ping`, `lab devices`, and `pidof labd`. No hub/device was
+  enumerated. Host mode remains blocked pending the missing module/support.
 
 ### Next bring-up
 
