@@ -47,3 +47,25 @@ After installation, connect the powered USB hub and record actual `lsusb`,
   out, so no binary was deployed or executed on the Duo.
 - No UART console or USB role switch was attempted. The safety gate remains
   active.
+
+## 2026-09-13 — Duo bridge and first labd deployment
+
+- The Duo is now visible through `daisies` as USB `3346:100c Cvitek NCM`.
+- `daisies` receives `usb0=192.168.42.180/24`; the Duo remains reachable at
+  `192.168.42.1` through that bridge.
+- The composite gadget also creates `/dev/ttyACM0` on `daisies`, but this is
+  the Duo USB CDC ACM function, not an independent 3.3 V TTL UART recovery
+  console.
+- The RISC-V binaries were built on `daisies`, transferred through the bridge,
+  and executed on the real Duo. `lab ping`, `lab status`, and `lab devices`
+  succeeded.
+- `labd` is started by `/etc/init.d/S70labd` and has PID 1170 during the
+  measurement. The measured `/proc/1170/status` values were `VmSize=1132 kB`
+  and `VmRSS=640 kB`; `/usr/local/lib/music-lab/labd` is 545 KiB.
+- `lab devices` currently discovers the five onboard UART nodes: `ttyS0`
+  through `ttyS4`. No downstream USB musical device is attached.
+- A separate SSH connection confirmed the daemon remains running after the
+  installing SSH session ended. Reboot persistence and UART-session
+  persistence remain untested because the independent TTL console safety gate
+  is not yet satisfied.
+- No USB gadget-to-host role command has been identified or executed.

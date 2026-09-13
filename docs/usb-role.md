@@ -1,9 +1,9 @@
 # Duo USB role investigation
 
-No role switch has been performed. The USB-C gadget SSH path was not
-available during the latest check, and the Duo was not enumerated on
-`daisies`. The safety requirement is therefore still active: establish and
-verify UART recovery before changing the USB role.
+No role switch has been performed. The Duo is currently reachable through
+its USB-C gadget mode via `daisies` (`usb0` on the Pi, `192.168.42.1` on the
+Duo). The safety requirement is still active: establish and verify an
+independent TTL UART recovery path before changing the USB role.
 
 When the Duo is reachable, record the actual output of:
 
@@ -22,5 +22,5 @@ Do not apply a host-mode command from another Duo variant. Document the
 exact reversible command found on this original CV1800B image, and its exact
 restore-to-gadget command, before testing either one.
 
-The current verified USB observation on `daisies` is only its own root hub
-and internal hub/Ethernet devices; it is not evidence of Duo host support.
+The current verified USB observation is the Duo composite gadget (`3346:100c`)
+with CDC NCM and CDC ACM interfaces. This is not evidence of Duo host support.

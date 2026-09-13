@@ -261,9 +261,28 @@ static void write_host_status(FILE *client)
     FILE *net = fopen("/proc/net/fib_trie", "r");
     if(net != NULL)
     {
+        char current_ip[64] = "";
+        char seen_ips[16][64];
+        size_t seen_count = 0;
         while(fgets(line, sizeof(line), net) != NULL)
-            if(strstr(line, "32 host LOCAL") != NULL && fgets(line, sizeof(line), net) != NULL)
-                fprintf(client, "IP %s", line);
+        {
+            char *marker = strstr(line, "|-- ");
+            if(marker != NULL)
+                (void)sscanf(marker + 4, "%63s", current_ip);
+            if(strstr(line, "/32 host LOCAL") != NULL && current_ip[0] != '\0')
+            {
+                int already_seen = 0;
+                for(size_t i = 0; i < seen_count; ++i)
+                    if(strcmp(current_ip, seen_ips[i]) == 0)
+                        already_seen = 1;
+                if(!already_seen && seen_count < 16)
+                {
+                    fprintf(client, "IP %s\n", current_ip);
+                    copy_text(seen_ips[seen_count], sizeof(seen_ips[seen_count]), current_ip);
+                    ++seen_count;
+                }
+            }
+        }
         fclose(net);
     }
 }
