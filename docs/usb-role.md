@@ -19,22 +19,24 @@ ls /sys/class/udc
 find /sys -path '*usb_role*' -o -path '*role*' 2>/dev/null
 ```
 
-The original image contains the following board-specific helper:
+The original image contains these board-specific helpers:
 
 ```sh
 /mnt/system/usb-host.sh host
-/mnt/system/usb-host.sh device
+/etc/uhubon.sh host
+/etc/uhubon.sh device
 ```
 
-Its implementation was read on the live board. `host` loads
-`/mnt/system/ko/dwc2.ko` and writes `host` to `/proc/cviusb/otg_role`;
-`device` writes `device` to the same node. The current live value is
-`device`, and `/sys/class/udc/4340000.usb` is present. The helper is specific
-to this stock image and is not being treated as guidance for Duo S or Duo
-256M. Neither command has been executed yet.
+The `/mnt/system/usb-host.sh` script is a host-only convenience wrapper. The
+reversible `/etc/uhubon.sh` implementation was read on the live board:
+`host` first attempts to load `/mnt/system/ko/dwc2.ko` and then writes `host`
+to `/proc/cviusb/otg_role`; `device` writes `device` to the same node. The
+current live value is `device`, and `/sys/class/udc/4340000.usb` is present.
+These helpers are specific to this stock image and are not being treated as
+guidance for Duo S or Duo 256M.
 
 The exact observed restore command, if a host-mode test is later performed,
-is `/mnt/system/usb-host.sh device`. The host transition must be performed
+is `/etc/uhubon.sh device`. The host transition must be performed
 only from the proven UART console, with the serial session kept open.
 
 The current verified USB observation is the Duo composite gadget (`3346:100c`)
