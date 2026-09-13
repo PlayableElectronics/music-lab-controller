@@ -2,4 +2,5 @@
 image/out/
 image/*.img
 image/*.img.*
+build/
 *.swp
