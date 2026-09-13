@@ -46,5 +46,13 @@ known address `192.168.1.50`. It has native `/usr/bin/gcc` and can host the
 Debian `riscv64-linux-gnu` cross compiler. A non-root extracted toolchain was
 used successfully for a strict static build; see `docs/notes.md`.
 
-The latest physical inspection found no Duo serial adapter and no Duo USB
-network interface on `daisies`. Only the Pi's own USB hub chain was visible.
+The Pi's usable UART is `/dev/serial0` (`/dev/ttyAMA0`) after enabling the
+UART and disabling the Bluetooth overlay. The verified direct wiring uses Pi
+GPIO14/TXD0 and GPIO15/RXD0 to the original Duo header's UART0 pins (Duo
+physical pins 10/RX and 8/TX respectively), plus common ground. This UART
+console has been used to log in, run the lab commands, and observe a complete
+Duo reboot. It is now the recovery path for any future USB-role experiment.
+
+The Duo is also visible to `daisies` in its current gadget mode as USB
+`3346:100c` with `usb0=192.168.42.180/24` on the Pi. Downstream host/hub
+capability has not yet been tested.

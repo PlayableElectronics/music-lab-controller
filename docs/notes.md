@@ -15,6 +15,28 @@
 - The official Milk-V cross-compiler downloaded for investigation is a Linux
   x86_64 executable and cannot run directly on this Apple Silicon Mac.
 
+### Verified UART recovery console
+
+- `daisies` is a Raspberry Pi 3 Model B+ using `/dev/serial0` ->
+  `/dev/ttyAMA0`; GPIO14/TXD0 (physical pin 8) connects to Duo UART0 RX
+  (original Duo physical pin 10), and GPIO15/RXD0 (physical pin 10) connects
+  to Duo UART0 TX (original Duo physical pin 8). Ground is Pi physical pin 6
+  to Duo physical pin 14/20. The connection is 3.3 V TTL, crossed TX/RX,
+  115200 8N1.
+- `daisies` required `enable_uart=1`, `dtoverlay=disable-bt`, and stopping
+  `serial-getty@ttyAMA0` so the serial terminal could own the port.
+- The Duo boot console is `ttyS0` (`console=ttyS0,115200 earlycon=sbi`). An
+  interactive login was verified over the direct UART. Over that console,
+  `lab ping`, `lab status`, and `lab devices` all succeeded.
+- The Duo was rebooted while the UART reader remained open. Boot output and
+  login returned; `lab ping` returned `OK PONG`, `pidof labd` returned PID 163,
+  and the status/device commands succeeded. This satisfies the independent
+  recovery safety gate.
+- The live Duo USB role was not changed. A read-only inspection found the
+  original-image helper `/mnt/system/usb-host.sh`, which writes `host` or
+  `device` to `/proc/cviusb/otg_role`; see `docs/usb-role.md`. No role command
+  was executed.
+
 ### Next bring-up
 
 Use a Linux x86_64 build host or VM with the RISC-V musl compiler, then run:
