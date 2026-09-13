@@ -1,0 +1,5 @@
+.DS_Store
+image/out/
+image/*.img
+image/*.img.*
+*.swp
