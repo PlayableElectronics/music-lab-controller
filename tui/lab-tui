@@ -1,0 +1,21 @@
+#!/bin/sh
+set -u
+
+old_stty=$(stty -g 2>/dev/null || true)
+cleanup() { [ -n "$old_stty" ] && stty "$old_stty" 2>/dev/null || true; printf '\033[0m\033[2J\033[H'; }
+trap cleanup EXIT INT TERM
+stty -icanon min 0 time 5 2>/dev/null || true
+
+while :; do
+    printf '\033[2J\033[H'
+    printf 'MUSIC LAB\n==================================================\n\n'
+    printf 'DEVICES\n\n'
+    lab devices 2>/dev/null || printf 'labd unavailable\n'
+    printf '\n--------------------------------------------------\nHOST\n'
+    lab status 2>/dev/null | sed -n '1,8p' || true
+    printf '\n[r] refresh   [q] quit\n'
+    key=''
+    IFS= read -r -n 1 key 2>/dev/null || true
+    [ "$key" = q ] && break
+done
+

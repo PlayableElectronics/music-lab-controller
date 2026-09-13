@@ -11,6 +11,9 @@ is known to boot.
 5. Confirm the USB network interface and ping `192.168.42.1`.
 6. Run `scripts/connect.sh 192.168.42.1`.
 7. On the Duo, run `scripts/probe-duo.sh`.
+8. From the Mac, install the controller with `./scripts/install.sh` once a
+   RISC-V Linux compiler is available.
+9. Confirm `ssh root@192.168.42.1 lab ping` and `lab devices`.
 
 Useful inspection commands after SSH:
 
@@ -29,3 +32,7 @@ ls -l /dev/tty*
 Record actual outputs before changing configuration. In particular, verify
 which USB controller mode, class drivers, UARTs, and modules the stock image
 provides. Do not assume USB host or USB MIDI support.
+
+For the current stock image, the SSH server does not include
+`/usr/libexec/sftp-server`; installers must use legacy SCP (`scp -O`). The
+project install script handles this compatibility detail.

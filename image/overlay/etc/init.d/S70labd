@@ -1,0 +1,18 @@
+#!/bin/sh
+
+DAEMON=/usr/local/lib/music-lab/labd
+PIDFILE=/var/run/labd.pid
+
+case "$1" in
+    start)
+        [ -x "$DAEMON" ] || exit 0
+        if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null; then exit 0; fi
+        "$DAEMON" >/tmp/labd.log 2>&1 &
+        echo $! > "$PIDFILE"
+        ;;
+    stop)
+        if [ -f "$PIDFILE" ]; then kill "$(cat "$PIDFILE")" 2>/dev/null || true; rm -f "$PIDFILE"; fi
+        ;;
+    restart) "$0" stop; "$0" start ;;
+    *) echo "Usage: $0 {start|stop|restart}" >&2; exit 1 ;;
+esac
