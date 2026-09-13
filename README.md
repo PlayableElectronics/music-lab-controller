@@ -37,3 +37,23 @@ later experiment, not an initial dependency.
 
 See [docs/bringup.md](docs/bringup.md), [docs/hardware.md](docs/hardware.md),
 and [docs/architecture.md](docs/architecture.md).
+
+## First CLI
+
+Install the small BusyBox-compatible status command over SSH:
+
+```sh
+./scripts/install-lab.sh
+```
+
+Then run it remotely:
+
+```sh
+ssh root@192.168.42.1 lab status
+```
+
+Override the SSH target when needed:
+
+```sh
+LAB_HOST=root@192.168.42.1 ./scripts/install-lab.sh
+```

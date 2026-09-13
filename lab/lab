@@ -1,0 +1,72 @@
+#!/bin/sh
+set -u
+
+usage() {
+    printf 'Usage: %s status\n' "$0" >&2
+    exit 2
+}
+
+print_ipv4() {
+    if command -v ip >/dev/null 2>&1; then
+        ip -4 addr 2>/dev/null | awk '/inet / { sub(/\/.*$/, "", $2); print "  " $2 }'
+    elif command -v ifconfig >/dev/null 2>&1; then
+        ifconfig 2>/dev/null | awk '/inet addr:/ { sub(/^addr:/, "", $2); print "  " $2 } /inet / { print "  " $2 }'
+    else
+        printf '  unavailable\n'
+    fi
+}
+
+print_memory_value() {
+    key=$1
+    if [ -r /proc/meminfo ]; then
+        awk -v key="$key" '$1 == key ":" { print $2 " " $3; found=1; exit } END { if (!found) print "unavailable" }' /proc/meminfo
+    else
+        printf 'unavailable\n'
+    fi
+}
+
+print_serial_devices() {
+    found=0
+    for device in /dev/ttyS* /dev/ttyACM* /dev/ttyUSB*; do
+        [ -e "$device" ] || continue
+        name=${device##*/}
+        case "$name" in
+            ttyS*) label=UART ;;
+            ttyACM*) label='USB CDC' ;;
+            ttyUSB*) label='USB serial' ;;
+            *) label=serial ;;
+        esac
+        printf '  %-12s %s\n' "$name" "$label"
+        found=1
+    done
+    [ "$found" -eq 1 ] || printf '  none detected\n'
+}
+
+[ "$#" -eq 1 ] && [ "$1" = status ] || usage
+
+printf 'Music Lab Controller\n\n'
+printf 'HOST\n'
+printf '  hostname      '; command -v hostname >/dev/null 2>&1 && hostname || printf 'unavailable\n'
+printf '  kernel        '; command -v uname >/dev/null 2>&1 && uname -a || printf 'unavailable\n'
+printf '  architecture  '; command -v uname >/dev/null 2>&1 && uname -m || printf 'unavailable\n'
+printf '  uptime        '
+if [ -r /proc/uptime ]; then
+    awk '{ printf "%s seconds\n", $1 }' /proc/uptime
+elif command -v uptime >/dev/null 2>&1; then
+    uptime
+else
+    printf 'unavailable\n'
+fi
+printf '  memory total  '; print_memory_value MemTotal
+printf '  memory free   '; print_memory_value MemFree
+printf '  ip            \n'; print_ipv4
+
+printf '\nDEVICES\n'
+print_serial_devices
+
+printf '\nUSB\n'
+if command -v lsusb >/dev/null 2>&1; then
+    lsusb 2>/dev/null || printf '  unavailable\n'
+else
+    printf '  lsusb unavailable\n'
+fi
